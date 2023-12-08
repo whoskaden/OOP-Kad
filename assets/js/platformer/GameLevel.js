@@ -18,13 +18,11 @@ class GameLevel {
         this.isComplete = gameObject?.callback; // function that determines if level is complete
         GameEnv.levels.push(this);
     }
-
     // Load level data
     async load() {
-        
         // test for presence of Images
-       const imagesToLoad = [];
-        if(this.backgroundImg2) {
+        const imagesToLoad = [];
+        if (this.backgroundImg2) {
             imagesToLoad.push(this.loadImage(this.backgroundImg2));
         }
         if (this.backgroundImg) {
@@ -39,13 +37,11 @@ class GameLevel {
         if (this.tubeImg) {
             imagesToLoad.push(this.loadImage(this.tubeImg));
         }
-
         try {
             // Do not proceed until images are loaded
             const loadedImages = await Promise.all(imagesToLoad);
             var i = 0;
-
-            //Second Background 
+            // Second background
             if (this.backgroundImg2) {
                 const backgroundCanvas = document.createElement("canvas");
                 backgroundCanvas.id = "background";
@@ -54,7 +50,6 @@ class GameLevel {
                 new Background(backgroundCanvas, loadedImages[i], backgroundSpeedRatio);
                 i++;
             }
-
             // Prepare HTML with Background Canvas (if backgroundImg is defined)
             if (this.backgroundImg) {
                 const backgroundCanvas = document.createElement("canvas");
@@ -64,7 +59,6 @@ class GameLevel {
                 new Background(backgroundCanvas, loadedImages[i], backgroundSpeedRatio);
                 i++;
             }
-
             // Prepare HTML with Platform Canvas (if platformImg is defined)
             if (this.platformImg) {
                 const platformCanvas = document.createElement("canvas");
@@ -74,7 +68,6 @@ class GameLevel {
                 new Platform(platformCanvas, loadedImages[i], platformSpeedRatio);
                 i++;
             }
-
             // Prepare HTML with Player Canvas (if playerImg is defined)
             if (this.playerImg) {
                 const playerCanvas = document.createElement("canvas");
@@ -84,7 +77,6 @@ class GameLevel {
                 new Player(playerCanvas, loadedImages[i], playerSpeedRatio, this.playerData);
                 i++;
             }
-
             // Prepare HTML with Player Canvas (if playerImg is defined)
             if (this.tubeImg) {
                 const tubeCanvas = document.createElement("canvas");
@@ -93,13 +85,10 @@ class GameLevel {
                 new Tube(tubeCanvas, loadedImages[i]);
                 i++;
             }
-
         } catch (error) {
             console.error('Failed to load one or more images:', error);
         }
-
     }
-
     // Create a function to load an image and return a Promise
     async loadImage(src) {
         return new Promise((resolve, reject) => {
@@ -110,5 +99,4 @@ class GameLevel {
         });
     }
 }
-
 export default GameLevel;

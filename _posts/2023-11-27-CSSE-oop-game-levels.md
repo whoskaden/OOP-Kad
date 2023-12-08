@@ -13,7 +13,6 @@ image: /images/platformer/backgrounds/hills.png
         z-index: 2; /*Ensure the controls are on top*/
     }
 </style>
-
 <!-- Prepare DOM elements -->
 <!-- Wrap both the canvas and controls in a container div -->
 <div id="canvasContainer">
@@ -28,19 +27,15 @@ image: /images/platformer/backgrounds/hills.png
         <button id="restartGame">Restart</button>
     </div>
 </div>
-
 <script type="module">
     // Imports
     import GameEnv from '{{site.baseurl}}/assets/js/platformer/GameEnv.js';
     import GameLevel from '{{site.baseurl}}/assets/js/platformer/GameLevel.js';
     import GameControl from '{{site.baseurl}}/assets/js/platformer/GameControl.js';
-
-
     /*  ==========================================
      *  ======= Data Definitions =================
      *  ==========================================
     */
-
     // Define assets for the game
     var assets = {
       obstacles: {
@@ -53,6 +48,7 @@ image: /images/platformer/backgrounds/hills.png
       backgrounds: {
         start: { src: "/images/platformer/backgrounds/home.png" },
         hills: { src: "/images/platformer/backgrounds/hills.png" },
+        mountains: { src: "/images/platformer/backgrounds/mountains.jpg" },
         planet: { src: "/images/platformer/backgrounds/planet.jpg" },
         castles: { src: "/images/platformer/backgrounds/castles.png" },
         end: { src: "/images/platformer/backgrounds/game_over.png" }
@@ -82,19 +78,16 @@ image: /images/platformer/backgrounds/hills.png
         }
       }
     };
-
     // add File to assets, ensure valid site.baseurl
     Object.keys(assets).forEach(category => {
       Object.keys(assets[category]).forEach(assetName => {
         assets[category][assetName]['file'] = "{{site.baseurl}}" + assets[category][assetName].src;
       });
     });
-
     /*  ==========================================
      *  ===== Game Level Call Backs ==============
      *  ==========================================
     */
-
     // Level completion tester
     function testerCallBack() {
         // console.log(GameEnv.player?.x)
@@ -104,7 +97,6 @@ image: /images/platformer/backgrounds/hills.png
             return false;
         }
     }
-
     // Helper function for button click
     function waitForButton(buttonName) {
       // resolve the button click
@@ -116,41 +108,32 @@ image: /images/platformer/backgrounds/hills.png
           waitButton.addEventListener('click', waitButtonListener);
       });
     }
-
     // Start button callback
     async function startGameCallback() {
       const id = document.getElementById("gameBegin");
       id.hidden = false;
-      
       // Use waitForRestart to wait for the restart button click
       await waitForButton('startGame');
       id.hidden = true;
-      
       return true;
     }
-
     // Home screen exits on Game Begin button
     function homeScreenCallback() {
       // gameBegin hidden means game has started
       const id = document.getElementById("gameBegin");
       return id.hidden;
     }
-
     // Game Over callback
     async function gameOverCallBack() {
       const id = document.getElementById("gameOver");
       id.hidden = false;
-      
       // Use waitForRestart to wait for the restart button click
       await waitForButton('restartGame');
       id.hidden = true;
-      
       // Change currentLevel to start/restart value of null
       GameEnv.currentLevel = null;
-
       return true;
     }
-
     /*  ==========================================
      *  ========== Game Level setup ==============
      *  ==========================================
@@ -163,21 +146,17 @@ image: /images/platformer/backgrounds/hills.png
     new GameLevel( {tag: "start", callback: startGameCallback } );
     new GameLevel( {tag: "home", background: assets.backgrounds.start, callback: homeScreenCallback } );
     // Game screens
-    new GameLevel( {tag: "hills", background: assets.backgrounds.hills, platform: assets.platforms.grass, player: assets.players.mario, tube: assets.obstacles.tube, callback: testerCallBack } );
+    new GameLevel( {tag: "hills", background: assets.backgrounds.hills, background2: assets.backgrounds.mountains, platform: assets.platforms.grass, player: assets.players.mario, tube: assets.obstacles.tube, callback: testerCallBack } );
     new GameLevel( {tag: "alien", background: assets.backgrounds.planet, platform: assets.platforms.alien, player: assets.players.monkey, callback: testerCallBack } );
     // Game Over screen
     new GameLevel( {tag: "end", background: assets.backgrounds.end, callback: gameOverCallBack } );
-
     /*  ==========================================
      *  ========== Game Control ==================
      *  ==========================================
     */
-
     // create listeners
     toggleCanvasEffect.addEventListener('click', GameEnv.toggleInvert);
     window.addEventListener('resize', GameEnv.resize);
-
     // start game
     GameControl.gameLoop();
-
 </script>
