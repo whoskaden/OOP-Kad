@@ -56,7 +56,11 @@ const GameControl = {
                 this.transitionToLevel(GameEnv.levels[0]);
             }
         }
-
+        if (deathController.getDeath() === 1) {
+            const currentIndex = GameEnv.levels.indexOf(currentLevel);
+            this.transitionToLevel(GameEnv.levels[currentIndex]);
+            deathController.setDeath(0);
+        }
         // recycle gameLoop, aka recursion
         requestAnimationFrame(this.gameLoop.bind(this));  
     },

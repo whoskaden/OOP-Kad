@@ -3,6 +3,10 @@ import Background from './Background.js';
 import Platform from './Platform.js';
 import Player from './Player.js';
 import Tube from './Tube.js';
+import Background2 from './Background2.js';
+import Enemy from './Enemy.js';
+import PlatformO from './PlatformO.js';
+import Thing1 from './Thing1.js';
 
 // Store the assets and attributes of the Game at the specific GameLevel.
 class GameLevel {
@@ -12,14 +16,20 @@ class GameLevel {
         this.backgroundImg2 = gameObject.background2?.file;
         this.backgroundImg = gameObject.background?.file;
         this.platformImg = gameObject.platform?.file;
+        this.platformOImg = gameObject.platformO?.file;
+        this.thingImg = gameObject.thing?.file;
         this.playerImg = gameObject.player?.file;
+        this.enemyImg = gameObject.enemy?.file;
+        this.enemyData = gameObject?.enemy;
         this.playerData = gameObject?.player;
         this.tubeImg = gameObject.tube?.file;
         this.isComplete = gameObject?.callback; // function that determines if level is complete
         GameEnv.levels.push(this);
     }
+
     // Load level data
     async load() {
+        
         // test for presence of Images
         const imagesToLoad = [];
         if (this.backgroundImg2) {
@@ -31,25 +41,37 @@ class GameLevel {
         if (this.platformImg) {
             imagesToLoad.push(this.loadImage(this.platformImg));
         }
+        if (this.platformOImg) {
+            imagesToLoad.push(this.loadImage(this.platformOImg));
+        }
         if (this.playerImg) {
             imagesToLoad.push(this.loadImage(this.playerImg));
+        }
+        if (this.enemyImg) {
+            imagesToLoad.push(this.loadImage(this.enemyImg));
         }
         if (this.tubeImg) {
             imagesToLoad.push(this.loadImage(this.tubeImg));
         }
+        if (this.thingImg) {
+            imagesToLoad.push(this.loadImage(this.thingImg));
+        }
+
         try {
             // Do not proceed until images are loaded
             const loadedImages = await Promise.all(imagesToLoad);
             var i = 0;
+
             // Second background
             if (this.backgroundImg2) {
                 const backgroundCanvas = document.createElement("canvas");
                 backgroundCanvas.id = "background";
                 document.querySelector("#canvasContainer").appendChild(backgroundCanvas);
-                const backgroundSpeedRatio = 0.1;
-                new Background(backgroundCanvas, loadedImages[i], backgroundSpeedRatio);
+                const backgroundSpeedRatio = 0;
+                new Background2(backgroundCanvas, loadedImages[i], backgroundSpeedRatio);
                 i++;
             }
+
             // Prepare HTML with Background Canvas (if backgroundImg is defined)
             if (this.backgroundImg) {
                 const backgroundCanvas = document.createElement("canvas");
@@ -59,6 +81,7 @@ class GameLevel {
                 new Background(backgroundCanvas, loadedImages[i], backgroundSpeedRatio);
                 i++;
             }
+
             // Prepare HTML with Platform Canvas (if platformImg is defined)
             if (this.platformImg) {
                 const platformCanvas = document.createElement("canvas");
@@ -68,6 +91,16 @@ class GameLevel {
                 new Platform(platformCanvas, loadedImages[i], platformSpeedRatio);
                 i++;
             }
+
+            if (this.platformOImg) {
+                const platformOCanvas = document.createElement("canvas");
+                platformOCanvas.id = "jumpPlatform";
+                document.querySelector("#canvasContainer").appendChild(platformOCanvas);
+                const platformOSpeedRatio = 0;
+                new PlatformO(platformOCanvas, loadedImages[i], platformOSpeedRatio);
+                i++;
+            }
+
             // Prepare HTML with Player Canvas (if playerImg is defined)
             if (this.playerImg) {
                 const playerCanvas = document.createElement("canvas");
@@ -77,6 +110,17 @@ class GameLevel {
                 new Player(playerCanvas, loadedImages[i], playerSpeedRatio, this.playerData);
                 i++;
             }
+            
+            // Prepare Enemy
+            if (this.enemyImg) {
+                const enemyCanvas = document.createElement("canvas");
+                enemyCanvas.id = "enemy";
+                document.querySelector("#canvasContainer").appendChild(enemyCanvas);
+                const enemySpeedRatio = 0.7;
+                new Enemy(enemyCanvas, loadedImages[i], enemySpeedRatio, this.enemyData);
+                i++;
+            }
+
             // Prepare HTML with Player Canvas (if playerImg is defined)
             if (this.tubeImg) {
                 const tubeCanvas = document.createElement("canvas");
@@ -85,10 +129,21 @@ class GameLevel {
                 new Tube(tubeCanvas, loadedImages[i]);
                 i++;
             }
+            if (this.thingImg) {
+                const platformCanvas = document.createElement("canvas");
+                platformCanvas.id = "thing2";
+                document.querySelector("#canvasContainer").appendChild(platformCanvas);
+                const platformSpeedRatio = 0;
+                new Thing1(platformCanvas, loadedImages[i], platformSpeedRatio);
+                i++;
+            };
+
         } catch (error) {
             console.error('Failed to load one or more images:', error);
         }
+
     }
+
     // Create a function to load an image and return a Promise
     async loadImage(src) {
         return new Promise((resolve, reject) => {
@@ -99,4 +154,5 @@ class GameLevel {
         });
     }
 }
+
 export default GameLevel;
