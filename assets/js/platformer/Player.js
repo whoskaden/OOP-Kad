@@ -1,5 +1,6 @@
 import GameEnv from './GameEnv.js';
 import Character from './Character.js';
+import deathController from './death.js';
 
 export class Player extends Character{
     // constructors sets up Character object 
@@ -117,25 +118,94 @@ export class Player extends Character{
 
     // Player action on collisions
     collisionAction() {
+        // tube
         if (this.collisionData.touchPoints.other.id === "tube") {
             // Collision with the left side of the Tube
             if (this.collisionData.touchPoints.other.left) {
                 this.movement.right = false;
+                console.log("tube touch left");
             }
             // Collision with the right side of the Tube
             if (this.collisionData.touchPoints.other.right) {
                 this.movement.left = false;
+                console.log("tube touch right");
             }
             // Collision with the top of the player
             if (this.collisionData.touchPoints.other.ontop) {
                 this.movement.down = false;
                 this.x = this.collisionData.touchPoints.other.x;
+                console.log("tube touch top");
             }
         } else {
             // Reset movement flags if not colliding with a tube
             this.movement.left = true;
             this.movement.right = true;
             this.movement.down = true;
+        };
+        // *******************************
+        // Platform collision
+        if (this.collisionData.touchPoints.other.id === "jumpPlatform") {
+            // Collision with the left side of the Platform
+            console.log("id")
+            if (this.collisionData.touchPoints.other.left && (this.topOfPlatform === true)) {
+                this.movement.right = false;
+                console.log("platform left")
+            }
+            // Collision with the right side of the platform
+            if (this.collisionData.touchPoints.other.right && (this.topOfPlatform === true)) {
+                this.movement.left = false;
+                console.log("platform right")
+            }
+            // Collision with the top of the player
+            if (this.collisionData.touchPoints.this.ontop) {
+                this.gravityEnabled = false;
+                console.log("c")
+            }
+            if (this.collisionData.touchPoints.this.bottom) {
+                this.gravityEnabled = false;
+                console.log("d")
+            }
+            if (this.collisionData.touchPoints.this.top) {
+                this.gravityEnabled = false;
+                this.topOfPlatform = true;
+                console.log(this.topOfPlatform + "top")
+                console.log(this.gravityEnabled + "grav")
+                //console.log("e");
+            }
+        } else {
+            this.topOfPlatform = false;
+            this.gravityEnabled = true;
+            /* this.movement.left = true;
+            this.movement.right = true;
+            this.movement.down = true; */
+        };
+        // The else statement above may be causing issues
+        // *******************************
+        // Enemy collision
+        if (this.collisionData.touchPoints.other.id === "enemy") {
+            // Collision with the left side of the Enemy
+            if (this.collisionData.touchPoints.other.left) {
+                deathController.setDeath(1);
+            }
+            // Collision with the right side of the Enemy
+            if (this.collisionData.touchPoints.other.right) {
+                deathController.setDeath(1);
+            }
+            // Collision with the top of the Enemy
+            if (this.collisionData.touchPoints.other.ontop) {
+                console.log("Bye Goomba");
+                this.y -= (this.bottom * .33);
+                this.collisionData.touchPoints.other.destroy();
+            }
+        };
+
+        if (this.collisionData.touchPoints.other.id === "thing1") {
+            if (this.collisionData.touchPoints.coin.left) {
+                GameEnv.touchingCoin = true;
+            }
+            if (this.collisionData.touchPoints.coin.right) {
+                GameEnv.touchingCoin = true;
+            }
         }
     }
     
@@ -149,6 +219,14 @@ export class Player extends Character{
                 // player active
                 this.isIdle = false;
             }
+            if (key === "a") {
+                GameEnv.backgroundSpeed2 = -0.1;
+                GameEnv.backgroundSpeed = -0.4;
+            }
+            if (key === "d") {
+                GameEnv.backgroundSpeed2 = 0.1;
+                GameEnv.backgroundSpeed = 0.4;
+            }
         }
     }
 
@@ -158,6 +236,14 @@ export class Player extends Character{
             const key = event.key;
             if (event.key in this.pressedKeys) {
                 delete this.pressedKeys[event.key];
+            }
+            if (key === "a") {
+                GameEnv.backgroundSpeed = 0;
+                GameEnv.backgroundSpeed2 = 0;
+            }
+            if (key === "d") {
+                GameEnv.backgroundSpeed = 0;
+                GameEnv.backgroundSpeed2 = 0;
             }
             this.setAnimation(key);  
             // player idle
@@ -175,6 +261,5 @@ export class Player extends Character{
         super.destroy();
     }
 }
-
 
 export default Player;

@@ -1,4 +1,5 @@
 import GameEnv from './GameEnv.js';
+import deathController from './death.js';
 
 /* GameControl is an object literal.
  *   Informerly GameControl looks like defining a variable with methods.
@@ -50,17 +51,18 @@ const GameControl = {
                         this.transitionToLevel(GameEnv.levels[currentIndex + 1]);
                     } 
                 }
+                if (deathController.getDeath() === 1) {
+                    const currentIndex = GameEnv.levels.indexOf(currentLevel);
+                    this.transitionToLevel(GameEnv.levels[currentIndex]);
+                    deathController.setDeath(0);
+                }
             // currentLevel is null, (ie start or restart game)
             } else {
                 // transition to beginning of game
                 this.transitionToLevel(GameEnv.levels[0]);
             }
         }
-        if (deathController.getDeath() === 1) {
-            const currentIndex = GameEnv.levels.indexOf(currentLevel);
-            this.transitionToLevel(GameEnv.levels[currentIndex]);
-            deathController.setDeath(0);
-        }
+
         // recycle gameLoop, aka recursion
         requestAnimationFrame(this.gameLoop.bind(this));  
     },
